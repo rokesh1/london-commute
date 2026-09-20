@@ -1,7 +1,7 @@
 name: Record TfL observations
 on:
   schedule:
-    - cron: '17,47 * * * *'
+    - cron: "17,47 * * * *"
   workflow_dispatch:
 permissions:
   contents: write
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
       - name: Load previous observations
         run: |
           mkdir -p /tmp/commute-observations
