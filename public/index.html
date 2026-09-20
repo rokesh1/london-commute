@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#122e2c">
+  <meta name="description" content="Check London Tube, DLR and Elizabeth line disruptions, save your commute lines and explore seven days of observed service status.">
+  <meta property="og:title" content="London Commute — Know before you go">
+  <meta property="og:description" content="Live London rail status and an honest look at service patterns. Built with TfL open data.">
+  <title>London Commute — Live rail status</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#network">Skip to line status</a>
+  <header class="masthead">
+    <a class="brand" href="/" aria-label="London Commute home"><span class="brand-mark" aria-hidden="true">lc<span></span></span><span>LONDON<br>COMMUTE</span></a>
+    <div class="edition">YOUR CITY. YOUR JOURNEY.</div>
+    <a class="header-link" href="https://tfl.gov.uk/plan-a-journey/" target="_blank" rel="noopener">Plan a journey <span aria-hidden="true">↗</span></a>
+  </header>
+  <main>
+    <section class="intro">
+      <div><p class="eyebrow" id="today">LONDON / LIVE NETWORK</p><h1>Know before<br>you <em>go.</em></h1><p class="intro-copy">A clearer view of your London commute.<br>Live line status. The patterns behind it.</p></div>
+      <div class="network-summary" aria-live="polite">
+        <div class="summary-top"><span class="eyebrow">NETWORK RIGHT NOW</span><span id="live-label" class="live-label">Connecting</span></div>
+        <div class="score"><span id="good-count">—</span><span class="score-caption">of <b id="total-count">13</b> lines<br>with good service</span></div>
+        <div class="network-stripes" id="network-stripes" aria-hidden="true"></div>
+        <p id="network-caption">Checking Tube, DLR & Elizabeth line…</p>
+      </div>
+    </section>
+
+    <section class="commute" aria-labelledby="commute-title">
+      <div class="commute-label"><span class="eyebrow">YOUR DAILY ROUTE</span><h2 id="commute-title">My commute</h2></div>
+      <div class="commute-content"><div id="commute-lines">Save your lines using the + button below.</div><p id="commute-status">Your selection stays on this device. No account needed.</p></div>
+      <button class="text-button" id="edit-commute">Choose lines <span aria-hidden="true">↓</span></button>
+    </section>
+
+    <section id="network" class="network" aria-labelledby="network-title">
+      <div class="section-heading"><div><p class="eyebrow">01 / THE LIVE PICTURE</p><h2 id="network-title">On the network</h2></div><div class="refresh-area"><span id="updated">Waiting for TfL</span><button id="refresh" class="refresh-button" aria-label="Refresh line status">↻ <span>Refresh</span></button></div></div>
+      <div id="error" class="error" role="alert" hidden></div>
+      <div class="toolbar"><div class="filters" role="group" aria-label="Filter lines"><button data-filter="all" class="active" aria-pressed="true">All lines <span id="all-count">13</span></button><button data-filter="issues" aria-pressed="false">Disruptions <span id="issues-count">—</span></button><button data-filter="saved" aria-pressed="false">My lines <span id="saved-count">0</span></button></div><label class="search"><span aria-hidden="true">⌕</span><input type="search" id="search" placeholder="Find a line" aria-label="Find a line"></label></div>
+      <div id="lines" class="line-grid" aria-live="polite"><p class="empty">Fetching the latest status from TfL…</p></div>
+      <p class="network-note">Line-wide status from TfL · Refreshes every minute while this page is visible · Open a line for details</p>
+    </section>
+
+    <section class="history-section" aria-labelledby="history-title">
+      <div class="section-heading"><div><p class="eyebrow">02 / A LITTLE PERSPECTIVE</p><h2 id="history-title">The last seven days</h2></div><label class="history-picker">Explore a line<select id="history-line" aria-label="Line to explore"><option value="central">Central</option></select></label></div>
+      <div class="history-layout"><div class="history-chart"><div class="chart-heading"><h3 id="history-line-name">Central line</h3><span class="chart-unit">Good-service observations</span></div><div id="chart" class="chart"><p class="empty">Loading observations…</p></div><div class="legend"><span><i class="legend-good"></i>Good service</span><span><i class="legend-issue"></i>Other status</span><span><i class="legend-missing"></i>No observations</span></div></div><aside class="history-aside"><span class="eyebrow">WHAT THE DATA SAYS</span><div class="history-score" id="history-score">—<small>good-service samples</small></div><p id="history-detail">The history starts with real observations. No estimated or backfilled data.</p><p id="history-freshness" class="history-freshness"></p></aside></div>
+      <details class="methodology"><summary>How to read these numbers <span aria-hidden="true">+</span></summary><p>We request a network snapshot approximately every 30 minutes and retain seven days. Each bar shows the share of observations reporting “Good Service” on that London calendar date. Planned closures, delays and other reported notices count as other status; unknown status is excluded from the percentage.</p><p>This is a sample of line-wide reports, not train punctuality, journey reliability or the percentage of time a line operated normally. Overnight closures are included. Scheduled collection can be delayed or missed; missing observations are never treated as good service. Sample counts and the latest collection time are shown. Today is a partial day.</p></details>
+    </section>
+    <section class="end-note"><span class="note-symbol" aria-hidden="true">↗</span><div><h2>A snapshot, not a crystal ball.</h2><p>Conditions can change quickly. Check TfL for your specific journey before travelling.</p></div><a href="https://tfl.gov.uk/tube-dlr-overground/status/" target="_blank" rel="noopener">Check TfL <span aria-hidden="true">↗</span></a></section>
+  </main>
+  <footer><span class="footer-brand">LONDON COMMUTE <span>by Rokesh Sankar</span></span><div><a href="https://github.com/rokesh1/london-commute" target="_blank" rel="noopener">View the code ↗</a><a href="https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service" target="_blank" rel="noopener">Powered by TfL Open Data</a></div><p>Independent project. Not affiliated with Transport for London. Contains public sector information licensed under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence v3.0</a>.</p></footer>
+  <noscript><p class="error">JavaScript is needed to load live status. <a href="https://tfl.gov.uk/tube-dlr-overground/status/">Check TfL directly.</a></p></noscript>
+</body>
+</html>

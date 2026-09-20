@@ -1,0 +1,8 @@
+node_modules/
+.vercel/
+.env*
+!.env.example
+.sites-runtime/
+dist/
+.DS_Store
+coverage/
