@@ -12,5 +12,5 @@ const cutoff = Date.now() - 7 * 86400000;
 samples = samples.filter(s => Date.parse(s.at) >= cutoff);
 samples.push({ at: current.fetchedAt, lines: Object.fromEntries(current.lines.map(l => [l.id, l.state])) });
 await mkdir(dirname(file), { recursive: true });
-await writeFile(file, JSON.stringify({ samples }, null, 2) + '\n');
+await writeFile(file, JSON.stringify({ scheduled: process.env.GITHUB_ACTIONS === 'true', samples }, null, 2) + '\n');
 console.log(`Stored ${samples.length} observations`);

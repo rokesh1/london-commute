@@ -1,0 +1,38 @@
+name: Record TfL observations
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: observations
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Load previous observations
+        run: |
+          mkdir -p /tmp/commute-observations
+          if git ls-remote --exit-code --heads origin observations; then
+            git fetch origin observations
+            git show FETCH_HEAD:history.json > /tmp/commute-observations/history.json
+          fi
+      - name: Sample current line status
+        run: node scripts/collect.mjs /tmp/commute-observations/history.json
+        env:
+          TFL_APP_KEY: ${{ secrets.TFL_APP_KEY }}
+      - name: Save observations on data branch
+        run: |
+          git checkout --orphan next-observation
+          git rm -rf .
+          cp /tmp/commute-observations/history.json history.json
+          git add history.json
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Update rolling TfL observations'
+          git push origin HEAD:observations --force

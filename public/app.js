@@ -4,7 +4,7 @@ const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const time = value => new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 const dateTime = value => new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
-let lines = [], samples = [], filter = 'all', fetchedAt = null, busy = false;
+let lines = [], samples = [], filter = 'all', fetchedAt = null, busy = false, historyFailed = false, scheduled = false;
 let saved = [];
 try { const stored = JSON.parse(localStorage.getItem('commute-lines') || '[]'); if (Array.isArray(stored)) saved = stored.filter(id => Object.hasOwn(COLORS, id)); } catch { /* Storage can be disabled in private browsing. */ }
 
@@ -72,15 +72,19 @@ async function refresh() {
 }
 
 function renderHistory() {
+  if (historyFailed) return;
   const id = $('#history-line').value;
   const name = lines.find(l => l.id === id)?.name || 'Central';
   $('#history-line-name').textContent = name + (['dlr', 'elizabeth'].includes(id) ? '' : ' line');
-  const summary = summarize(samples, id);
+  const firstDay = new Date(londonDate(Date.now()) + 'T12:00:00Z');
+  firstDay.setUTCDate(firstDay.getUTCDate() - 6);
+  const displayedSamples = samples.filter(s => Number.isFinite(Date.parse(s.at)) && londonDate(s.at) >= londonDate(firstDay));
+  const summary = summarize(displayedSamples, id);
   $('#history-score').innerHTML = `${summary.percent === null ? '—' : summary.percent + '%'}<small>good-service samples</small>`;
   $('#history-detail').textContent = summary.known ? `${summary.good} of ${summary.known} known-status observations reported good service. ${summary.total - summary.known ? `${summary.total - summary.known} unknown observations excluded. ` : ''}This measures snapshots, not journey punctuality.` : 'Observations are just getting started. Check back after the collector has run; no history is invented.';
   const timestamps = samples.map(s => Date.parse(s.at)).filter(Number.isFinite);
   const latest = timestamps.length ? Math.max(...timestamps) : null;
-  $('#history-freshness').textContent = latest ? `Latest sample: ${dateTime(latest)} London.${Date.now() - latest > 90 * 60000 ? ' Collection is delayed; gaps are not filled.' : ''}` : 'Scheduled approximately every 30 minutes.';
+  $('#history-freshness').textContent = (latest ? `Latest sample: ${dateTime(latest)} London. ` : '') + (scheduled ? (latest && Date.now() - latest > 90 * 60000 ? 'Collection is delayed; gaps are not filled.' : 'Scheduled approximately every 30 minutes.') : 'Automatic collection is awaiting setup.');
   const today = londonDate(Date.now());
   const days = Array.from({ length: 7 }, (_, i) => {
     // Noon UTC remains on the same London date, including DST transitions.
@@ -104,9 +108,14 @@ async function loadHistory() {
     const data = await response.json();
     if (!response.ok || !Array.isArray(data.samples)) throw new Error('Unavailable');
     samples = data.samples;
+    scheduled = data.scheduled === true;
+    historyFailed = false;
     renderHistory();
   } catch {
+    historyFailed = true;
     $('#chart').innerHTML = '<p class="empty">History is temporarily unavailable. Live status is separate and can still be refreshed.</p>';
+    $('#history-score').innerHTML = '—<small>history unavailable</small>';
+    $('#history-freshness').textContent = '';
     $('#history-detail').textContent = 'We couldn’t load the observation history. Try Refresh to load it again.';
   }
 }
