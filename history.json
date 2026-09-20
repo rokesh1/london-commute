@@ -1,0 +1,22 @@
+{
+  "samples": [
+    {
+      "at": "2026-09-20T07:23:03.064Z",
+      "lines": {
+        "bakerloo": "good",
+        "central": "good",
+        "circle": "delays",
+        "district": "disrupted",
+        "dlr": "disrupted",
+        "elizabeth": "good",
+        "hammersmith-city": "good",
+        "jubilee": "good",
+        "metropolitan": "good",
+        "northern": "good",
+        "piccadilly": "disrupted",
+        "victoria": "good",
+        "waterloo-city": "disrupted"
+      }
+    }
+  ]
+}
